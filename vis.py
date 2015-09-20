@@ -74,6 +74,8 @@ class Canvas(app.Canvas):
     def __init__(self):
         app.Canvas.__init__(self, keys='interactive', size=(800, 600))
 
+        self._starttime = 0
+
         # Create program
         self._program = gloo.Program(VERT_SHADER, FRAG_SHADER)
         self._program.bind(gloo.VertexBuffer(data))
@@ -81,7 +83,7 @@ class Canvas(app.Canvas):
 
         # Create first explosion
         TEAL = (0.1, 0.9, 0.5, )
-        self._new_explosion(TEAL)
+        self._new_explosion(TEAL, [0.5, 0.0, 0.0])
 
         # Enable blending
         gloo.set_state(blend=True, clear_color='black',
@@ -96,7 +98,6 @@ class Canvas(app.Canvas):
         gloo.set_viewport(0, 0, width, height)
 
     def on_draw(self, event):
-
         # Clear
         gloo.clear()
 
@@ -104,11 +105,12 @@ class Canvas(app.Canvas):
         self._program['u_time'] = time.time() - self._starttime
         self._program.draw('points')
 
-    def _new_explosion(self, color):
+    def _new_explosion(self, color, location):
+        if self._starttime + 0.75 > time.time():
+            return
 
         # New centerpos
-        centerpos = [0.5, 0.0, 0.0]
-        self._program['u_centerPosition'] = centerpos
+        self._program['u_centerPosition'] = location
 
         # New color, scale alpha with N
         alpha = 1.0 / N ** 0.08
