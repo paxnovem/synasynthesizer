@@ -30,15 +30,30 @@ if not fluidsynth.init(SF2):
     sys.exit(1)
 
 pygame.init()
-pygame.font.init()
 
-font = pygame.font.SysFont('monospace', 12)
-screen = pygame.display.set_mode((640, 480))
 x = 0
 y = 0
 
 from sensor_interface import SensorInterface
 from utils import *
+
+from vispy import app
+import vis
+import random
+
+app.set_interactive()
+
+canvas = vis.Canvas()
+canvas.show()
+
+RED = (0.9, 0.1, 0.1, )
+ORANGE = (0.9, 0.5, 0.1, )
+YELLOW = (0.9, 0.9, 0.1, )
+GREEN = (0.1, 0.9, 0.1, )
+TEAL = (0.1, 0.9, 0.5, )
+BLUE = (0.1, 0.1, 0.9, )
+INDIGO = (0.5, 0.1, 0.9, )
+PURPLE = (0.9, 0.1, 0.9, )
 
 sensor = SensorInterface()
 sensor.connect()
@@ -120,6 +135,8 @@ while not quit:
 
                 if len(note):
                     fluidsynth.play_Note(Note(note, octave), channel, 100)
+
+                canvas._new_explosion(random.choice([ORANGE, RED, GREEN, BLUE]))
 
     tick += 0.001
 
