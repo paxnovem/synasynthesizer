@@ -9,30 +9,36 @@ from mingus.midi import fluidsynth
 from os import sys
 
 SF2 = 'soundfont.sf2'
-octave = 4
+
+octave = 6
 channel = 8
+velocity = 50
+
 quit = False
 
+tick = 0
+x = 0
+y = 0
+
+notes_played = set()
+
 notes = [
-    ['A#', 'B', 'B'],
-    ['G#', 'A', 'A#'],
-    ['F#', 'G', 'G#'],
-    ['F', 'F', 'F#'],
-    ['D#', 'E', 'E'],
-    ['C#', 'D', 'D#'],
-    ['C', 'C', 'C#'],
+    ['B', 'B', 'B'],
+    ['A#', 'A', 'A'],
+    ['G#', 'G', 'G'],
+    ['F#', 'F', 'F'],
+    ['E', 'E', 'E'],
+    ['D#', 'D', 'D'],
+    ['C#', 'C', 'C'],
     ['', '', ''],
     ['', '', '']
 ]
 
-if not fluidsynth.init(SF2):
+if not fluidsynth.init(SF2, "dsound"):
     print "Couldn't load soundfont", SF2
     sys.exit(1)
 
 pygame.init()
-
-x = 0
-y = 0
 
 from sensor_interface import SensorInterface
 from utils import *
@@ -71,40 +77,12 @@ while True:
 baseline_data = baseline_image["image"]
 
 while not quit:
+    notes_playing = set()
+    
     for event in pygame.event.get():
         if event.type == QUIT:
             quit = True
-
-    '''
-    time.sleep(0.5)
-
-    y_index = int((y % 9) / 3)
-    x_index = int((71 - x) / 8)
-    note = notes[x_index][y_index]
-
-    print("x = " + str(x) + " y = " + str(y))
-    print("[" + str(x_index) + "][" + str(y_index) + "]")
-    print(note)
-
-    if len(note):
-        fluidsynth.play_Note(Note(note, octave), channel, 100)
-
-        color = [RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE][x_index]
-        location = (
-            x_index / 7.0,
-            y_index / 5.0,
-            0.0
-        )
-
-        canvas._new_explosion(color, location)
-
-    y = y + 3
-
-    if y >= 9:
-        x = x + 8
-        y = 0
-    '''
-
+            
     images = sensor.getAllImages()
 
     if images:
@@ -134,22 +112,28 @@ while not quit:
 
                 touch_point = touch_area_midpoint(*touch_area)
 
-                print(point, touch_point)
-
                 y, x = point
 
                 y_index = int((y % 9) / 3)
                 x_index = int((71 - x) / 8)
+                
                 note = notes[x_index][y_index]
-
-                print("x = " + str(x) + " y = " + str(y))
-                print("[" + str(x_index) + "][" + str(y_index) + "]")
+                
                 print(note)
 
                 if len(note):
-                    fluidsynth.play_Note(Note(note, octave), channel, 100)
+                    notes_playing.add( (x_index, y_index, (octave - int(y/9))) )
 
                 canvas._new_explosion(random.choice([ORANGE, RED, GREEN, BLUE]))
+        
+        for coord in notes_playing:
+            if coord not in notes_played:
+                fluidsynth.midi.play_event(Note(notes[coord[0]][coord[1]], coord[2]), channel, velocity)
+                notes_played.add(coord)
+        
+        for coord in set(notes_played):
+            if coord not in notes_playing:
+                notes_played.remove(coord)
 
 sensor.close()
 pygame.quit()
