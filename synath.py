@@ -12,7 +12,7 @@ SF2 = 'soundfont.sf2'
 octave = 4
 channel = 8
 quit = False
-tick = 0
+
 notes = [
     ['A#', 'B', 'B'],
     ['G#', 'A', 'A#'],
@@ -75,22 +75,35 @@ while not quit:
         if event.type == QUIT:
             quit = True
 
-        if event.type == KEYUP:
-            y_index = int((y % 9) / 3)
-            x_index = int((71 - x) / 8)
-            note = notes[x_index][y_index]
+    '''
+    time.sleep(0.5)
 
-            print("x = " + str(x) + " y = " + str(y))
-            print("[" + str(x_index) + "][" + str(y_index) + "]")
-            print(note)
+    y_index = int((y % 9) / 3)
+    x_index = int((71 - x) / 8)
+    note = notes[x_index][y_index]
 
-            if len(note):
-                fluidsynth.play_Note(Note(note, octave), channel, 100)
-            y = y + 3
+    print("x = " + str(x) + " y = " + str(y))
+    print("[" + str(x_index) + "][" + str(y_index) + "]")
+    print(note)
 
-            if y >= 9:
-                x = x + 8
-                y = 0
+    if len(note):
+        fluidsynth.play_Note(Note(note, octave), channel, 100)
+
+        color = [RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, PURPLE][x_index]
+        location = (
+            x_index / 7.0,
+            y_index / 5.0,
+            0.0
+        )
+
+        canvas._new_explosion(color, location)
+
+    y = y + 3
+
+    if y >= 9:
+        x = x + 8
+        y = 0
+    '''
 
     images = sensor.getAllImages()
 
@@ -137,8 +150,6 @@ while not quit:
                     fluidsynth.play_Note(Note(note, octave), channel, 100)
 
                 canvas._new_explosion(random.choice([ORANGE, RED, GREEN, BLUE]))
-
-    tick += 0.001
 
 sensor.close()
 pygame.quit()
