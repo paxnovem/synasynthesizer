@@ -78,11 +78,11 @@ baseline_data = baseline_image["image"]
 
 while not quit:
     notes_playing = set()
-    
+
     for event in pygame.event.get():
         if event.type == QUIT:
             quit = True
-            
+
     images = sensor.getAllImages()
 
     if images:
@@ -116,21 +116,30 @@ while not quit:
 
                 y_index = int((y % 9) / 3)
                 x_index = int((71 - x) / 8)
-                
+
                 note = notes[x_index][y_index]
-                
+
                 print(note)
 
                 if len(note):
                     notes_playing.add( (x_index, y_index, (octave - int(y/9))) )
 
-                canvas._new_explosion(random.choice([ORANGE, RED, GREEN, BLUE]))
-        
+                color = [
+                    RED, ORANGE, YELLOW, GREEN, TEAL, BLUE, INDIGO, PURPLE, RED
+                ][x_index]
+                location = (
+                    x_index / 7.0,
+                    y_index / 5.0,
+                    0.0
+                )
+
+                canvas._new_explosion(color, location)
+
         for coord in notes_playing:
             if coord not in notes_played:
                 fluidsynth.midi.play_event(Note(notes[coord[0]][coord[1]], coord[2]), channel, velocity)
                 notes_played.add(coord)
-        
+
         for coord in set(notes_played):
             if coord not in notes_playing:
                 notes_played.remove(coord)
