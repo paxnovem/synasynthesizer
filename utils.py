@@ -15,3 +15,16 @@ def array_one_to_two(original_list, wrap_amount):
 def brightest_points_in_list(two_list):
 	pass	
 	
+def delta_from_baseline(baseline_data, current_data):
+	list_of_deltas = []
+	for row_number in range(len(current_data)):
+		row = current_data[row_number]
+		new_row = []
+		for column_number in range(len(row)):
+			current_cell = row[column_number]
+			baseline_current_cell = baseline_data[row_number][column_number]
+			delta_of_current_cell = current_cell - baseline_current_cell
+			new_row.append(delta_of_current_cell)
+		list_of_deltas.append(new_row)
+	
+	return list_of_deltas		
