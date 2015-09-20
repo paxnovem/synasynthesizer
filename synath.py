@@ -14,13 +14,13 @@ channel = 8
 quit = False
 tick = 0
 notes = [
-    ['B', 'B', 'A#'],
-    ['A#', 'A', 'G#'],
-    ['G#', 'G', 'F#'],
-    ['F#', 'F', 'F'],
-    ['E', 'E', 'D#'],
-    ['D#', 'D', 'C#'],
-    ['C#', 'C', 'C'],
+    ['A#', 'B', 'B'],
+    ['G#', 'A', 'A#'],
+    ['F#', 'G', 'G#'],
+    ['F', 'F', 'F#'],
+    ['D#', 'E', 'E'],
+    ['C#', 'D', 'D#'],
+    ['C', 'C', 'C#'],
     ['', '', ''],
     ['', '', '']
 ]
@@ -44,13 +44,19 @@ while not quit:
         if event.type == KEYUP:
             y_index = int((y % 9) / 3)
             x_index = int((71 - x) / 8)
+            note = notes[x_index][y_index]
 
             print("x = " + str(x) + " y = " + str(y))
             print("[" + str(x_index) + "][" + str(y_index) + "]")
-            print(notes[x_index][y_index])
-            # fluidsynth.play_Note(Note('A#', octave), channel, 100)
-            x = x + 1
-            y = y + 1
+            print(note)
+            
+            if len(note):
+                fluidsynth.play_Note(Note(note, octave), channel, 100)
+            y = y + 3
+            
+            if y >= 9:
+                x = x + 8
+                y = 0
             
     tick += 0.001
 pygame.quit()
