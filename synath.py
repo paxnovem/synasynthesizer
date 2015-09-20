@@ -123,7 +123,7 @@ while not quit:
 
                 print(point, touch_point)
 
-                x, y = point
+                y, x = point
 
                 y_index = int((y % 9) / 3)
                 x_index = int((71 - x) / 8)
